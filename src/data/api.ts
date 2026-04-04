@@ -2,11 +2,13 @@
  * API boundary layer.
  *
  * Text intake (submitNote, submitQuickLog) is wired to the live Azure intake
- * endpoint at POST /api/v1/captures. If VITE_API_BASE_URL is not set the
+ * endpoint at POST /api/v1/captures and sends an authenticated device token.
+ * All three env vars must be present (VITE_API_BASE_URL, VITE_OCG_DEVICE_TOKEN,
+ * VITE_OCG_DEVICE_ID) for live requests to be made; when any are missing the
  * functions fall back to mock/console behavior so local dev keeps working.
  *
- * File upload (submitPhoto) is mock-only for now — multipart handling is
- * deferred until the backend contract for photo intake is defined.
+ * File upload (submitPhoto) is mock-only — multipart/file upload is deferred
+ * until the backend contract for photo intake is defined.
  */
 
 import {
@@ -22,9 +24,11 @@ import {
 
 export type { GardenEvent, WatchItem, IntakeItem, ReviewCandidate } from './mock'
 
-// Base URL is set via VITE_API_BASE_URL in .env (e.g. https://ocg-api.azurewebsites.net).
-// When absent, text-intake functions fall back to mock behavior.
+// All three env vars must be present for live requests. If any are missing,
+// text-intake functions fall back to mock behavior so local dev keeps working.
 const API_BASE = import.meta.env.VITE_API_BASE_URL as string | undefined
+const DEVICE_TOKEN = import.meta.env.VITE_OCG_DEVICE_TOKEN as string | undefined
+const DEVICE_ID = import.meta.env.VITE_OCG_DEVICE_ID as string | undefined
 
 interface CapturePayload {
   capture_type: string
@@ -33,13 +37,17 @@ interface CapturePayload {
 }
 
 async function postCapture(payload: CapturePayload): Promise<void> {
-  if (!API_BASE) {
+  if (!API_BASE || !DEVICE_TOKEN || !DEVICE_ID) {
     console.log('[API mock] postCapture:', payload)
     return
   }
   const res = await fetch(`${API_BASE}/api/v1/captures`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${DEVICE_TOKEN}`,
+      'x-ocg-device-id': DEVICE_ID,
+    },
     body: JSON.stringify(payload),
   })
   if (!res.ok) {
@@ -59,7 +67,7 @@ export async function getWatchItems(): Promise<WatchItem[]> {
 
 export async function submitNote(text: string): Promise<void> {
   await postCapture({
-    capture_type: 'note',
+    capture_type: 'dictated_note',
     raw_text: text,
     client_capture_id: crypto.randomUUID(),
   })
