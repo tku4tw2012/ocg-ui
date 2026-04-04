@@ -16,9 +16,13 @@ export default function PhotoCheck() {
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
-    if (!file) return
-    // blob: URLs are safe for use as img src — they reference local file data only
+    if (!file || !file.type.startsWith('image/')) return
     const url = URL.createObjectURL(file)
+    // createObjectURL always returns a blob: URL referencing local memory — safe for img src
+    if (!url.startsWith('blob:')) {
+      URL.revokeObjectURL(url)
+      return
+    }
     setPreview(url)
   }
 
