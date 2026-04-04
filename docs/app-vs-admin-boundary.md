@@ -27,7 +27,7 @@ Two distinct UI surfaces live in this repo. They share a component library but h
 
 **Audience:** the operator (likely the same person in a different context — managing the backend pipeline).  
 **Feel:** functional and clear; not enterprise-ugly, but intentionally denser than the app.  
-**Access:** protected route (basic auth or token-gated at minimum).
+**Access:** intended to be access-restricted; no route protection or auth is implemented in the current MVP scaffold.
 
 ### Admin UI surfaces
 - Intake queue — raw items waiting for processing

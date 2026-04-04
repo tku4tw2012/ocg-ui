@@ -12,7 +12,7 @@ This repo owns the OCGarden UI layer and its boundary contracts.
 | Design system direction | Component patterns, typography, spacing, color decisions |
 | API boundary placeholders | Typed stubs and `// TODO: real endpoint` markers in `src/data/api.ts`; mock data in `src/data/mock.ts` |
 | Navigation map & routes | Route definitions and surface ownership |
-| PWA manifest & shell | App shell, icons, service worker entry point |
+| PWA manifest & shell | App shell (`index.html` + React entry), `public/manifest.json`, SVG icons — no service worker in current scaffold |
 
 ## This repo does NOT own
 
