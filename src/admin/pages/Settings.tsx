@@ -1,21 +1,15 @@
-const sections = [
-  { title: 'Garden Profile', detail: 'Name, location, zones' },
-  { title: 'Notification Preferences', detail: 'Follow-up reminders, alerts' },
-  { title: 'Source Connections', detail: 'Gmail, weather API keys' },
-  { title: 'Data Export', detail: 'Export garden log as JSON or CSV' },
-  { title: 'App Theme', detail: 'Light / dark / system' },
-]
+import { settingsSections, adminPageCopy } from '../../config/adminConfig'
 
 export default function Settings() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-stone-800">Settings</h1>
-        <p className="text-sm text-stone-500 mt-1">Configuration placeholder</p>
+        <h1 className="text-xl font-semibold text-stone-800">{adminPageCopy.settings.title}</h1>
+        <p className="text-sm text-stone-500 mt-1">{adminPageCopy.settings.subtitle}</p>
       </div>
 
       <div className="bg-white rounded-xl border border-stone-200 divide-y divide-stone-100">
-        {sections.map((s) => (
+        {settingsSections.map((s) => (
           <div key={s.title} className="flex items-center justify-between px-4 py-3">
             <div>
               <p className="text-sm font-medium text-stone-700">{s.title}</p>
@@ -27,7 +21,7 @@ export default function Settings() {
       </div>
 
       <p className="text-xs text-stone-400 px-1">
-        Settings sections are placeholders. Full configuration will be added as backend contracts are settled.
+        {adminPageCopy.settings.footerNote}
       </p>
     </div>
   )

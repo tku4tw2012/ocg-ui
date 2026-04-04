@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Badge from '../../components/Badge'
 import { getIntakeItems } from '../../data/api'
 import type { IntakeItem } from '../../data/api'
+import { adminPageCopy } from '../../config/adminConfig'
 
 const sourceEmoji: Record<string, string> = {
   gmail: '✉️',
@@ -26,8 +27,8 @@ export default function IntakeQueue() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-stone-800">Intake Queue</h1>
-        <p className="text-sm text-stone-500 mt-1">{items.filter((i) => i.status === 'pending').length} pending</p>
+        <h1 className="text-xl font-semibold text-stone-800">{adminPageCopy.intake.title}</h1>
+        <p className="text-sm text-stone-500 mt-1">{adminPageCopy.intake.subtitle(items.filter((i) => i.status === 'pending').length)}</p>
       </div>
 
       <div className="bg-white rounded-xl border border-stone-200 overflow-hidden divide-y divide-stone-100">

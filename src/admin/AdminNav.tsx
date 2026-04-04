@@ -1,11 +1,5 @@
 import { NavLink, Link } from 'react-router-dom'
-
-const navItems = [
-  { to: '/admin/intake', label: 'Intake' },
-  { to: '/admin/review', label: 'Review' },
-  { to: '/admin/sync', label: 'Sync' },
-  { to: '/admin/settings', label: 'Settings' },
-]
+import { adminNavItems, adminBrandLabel, adminBackToAppLabel } from '../config/navigation'
 
 export default function AdminNav() {
   return (
@@ -13,10 +7,10 @@ export default function AdminNav() {
       <div className="max-w-4xl mx-auto px-4 flex items-center justify-between h-12">
         <div className="flex items-center gap-4">
           <Link to="/admin" className="text-sm font-semibold text-stone-200 shrink-0">
-            OCGarden Admin
+            {adminBrandLabel}
           </Link>
           <nav className="flex items-center gap-1">
-            {navItems.map(({ to, label }) => (
+            {adminNavItems.map(({ to, label }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -32,7 +26,7 @@ export default function AdminNav() {
           </nav>
         </div>
         <Link to="/today" className="text-xs text-stone-500 hover:text-stone-300">
-          ← App
+          {adminBackToAppLabel}
         </Link>
       </div>
     </header>

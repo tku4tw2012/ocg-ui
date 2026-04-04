@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Badge from '../../components/Badge'
 import { getReviewCandidates } from '../../data/api'
 import type { ReviewCandidate } from '../../data/api'
+import { adminPageCopy } from '../../config/adminConfig'
 
 const confidenceVariant: Record<string, 'green' | 'yellow' | 'red'> = {
   high: 'green',
@@ -23,8 +24,8 @@ export default function ReviewQueue() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-stone-800">Review Queue</h1>
-        <p className="text-sm text-stone-500 mt-1">{items.filter((r) => r.status === 'pending').length} pending</p>
+        <h1 className="text-xl font-semibold text-stone-800">{adminPageCopy.review.title}</h1>
+        <p className="text-sm text-stone-500 mt-1">{adminPageCopy.review.subtitle(items.filter((r) => r.status === 'pending').length)}</p>
       </div>
 
       <div className="space-y-2">
