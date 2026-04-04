@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { submitPhoto } from '../../data/api'
 
 export default function PhotoCheck() {
@@ -7,9 +7,17 @@ export default function PhotoCheck() {
   const [caption, setCaption] = useState('')
   const [saved, setSaved] = useState(false)
 
+  // Revoke blob URL on unmount or when preview changes to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    // blob: URLs are safe for use as img src — they reference local file data only
     const url = URL.createObjectURL(file)
     setPreview(url)
   }
