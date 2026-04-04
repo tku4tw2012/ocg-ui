@@ -10,24 +10,27 @@ Lightweight draft contracts for each UI surface. These are **mock-friendly** —
 
 | | |
 |---|---|
-| Primary actions | Start dictated note, open Quick Log, open Photo Check |
+| Primary actions | Navigate to Note, Log, or Photo capture |
 | Likely inputs | None (read-only on load) |
 | Likely outputs | Navigation to capture surfaces |
-| Data displayed | Weather summary block, recent timeline items (last 3–5), date |
-| Future API placeholders | `GET /api/today-summary` → `{ weather, recentItems[], date }` |
+| Data displayed | Recent `GardenEvent[]`, `WatchItem[]` watch list, date |
+| API (current) | Mock-only — `getRecentEvents()` and `getWatchItems()` return mock data |
+| Future API placeholders | `GET /api/v1/events?limit=10` → `GardenEvent[]`; `GET /api/v1/watch` → `WatchItem[]` |
 
 ---
 
 ## Dictated Note
 
-**Purpose:** Fast free-text or voice note capture.
+**Purpose:** Fast free-text note capture.
 
 | | |
 |---|---|
 | Primary actions | Save note, discard |
-| Likely inputs | Text area (voice-to-text via Web Speech API or manual) |
-| Likely outputs | Saved `TimelineItem` of type `note` |
-| Future API placeholders | `POST /api/items` with `{ type: "note", body: string, capturedAt: iso8601 }` |
+| Likely inputs | Text area (manual; voice-to-text via Web Speech API is a future enhancement) |
+| Likely outputs | Capture posted to intake endpoint |
+| API (live) | `POST /api/v1/captures` · `{ capture_type: "dictated_note", raw_text, client_capture_id }` |
+| Auth headers | `Authorization: Bearer <VITE_OCG_DEVICE_TOKEN>`, `x-ocg-device-id: <VITE_OCG_DEVICE_ID>` |
+| Mock fallback | Falls back to `console.log` when env vars are absent |
 
 ---
 
@@ -37,36 +40,41 @@ Lightweight draft contracts for each UI surface. These are **mock-friendly** —
 
 | | |
 |---|---|
-| Primary actions | Tap action tile, optional add note, save |
-| Likely inputs | Action type (from fixed list), optional free-text note, optional plant tag |
-| Likely outputs | Saved `QuickLogAction` |
-| Future API placeholders | `POST /api/items` with `{ type: "log", action: string, note?: string, plantTag?: string, capturedAt: iso8601 }` |
+| Primary actions | Tap action tile, optional add note / plant, save |
+| Likely inputs | Action id (water / move_in / move_out / repot / observe / weed), optional plant text, optional note |
+| Likely outputs | Capture posted to intake endpoint |
+| API (live) | `POST /api/v1/captures` · `{ capture_type: "quick_log", raw_text: "<action> — <plant>", client_capture_id }` |
+| Auth headers | `Authorization: Bearer <VITE_OCG_DEVICE_TOKEN>`, `x-ocg-device-id: <VITE_OCG_DEVICE_ID>` |
+| Mock fallback | Falls back to `console.log` when env vars are absent |
 
 ---
 
 ## Photo Check
 
-**Purpose:** Capture a plant photo with optional note.
+**Purpose:** Capture a plant photo with optional caption.
 
 | | |
 |---|---|
-| Primary actions | Open camera / library, optionally add note, save |
-| Likely inputs | Image file, optional text note, optional plant tag |
-| Likely outputs | Saved `TimelineItem` of type `photo` |
-| Future API placeholders | `POST /api/items/photo` with multipart `{ image, note?, plantTag?, capturedAt }` |
+| Primary actions | Open camera / library, optionally add caption, save |
+| Likely inputs | Image file (any `image/*`), optional caption text |
+| Likely outputs | Mock console.log only — no backend call yet |
+| API (current) | **Mock-only** — `submitPhoto()` logs to console; multipart upload contract is not yet defined |
+| Future API placeholder | `POST /api/v1/captures/photo` · multipart `{ image, caption?, capture_type: "photo", client_capture_id }` |
 
 ---
 
 ## Review
 
-**Purpose:** Browse and reflect on past garden entries.
+**Purpose:** Browse AI-parsed garden entries and confirm or dismiss them.
 
 | | |
 |---|---|
-| Primary actions | Scroll timeline, filter by plant / type / date range, open detail |
-| Likely inputs | Filter state (plant tag, type, date) |
-| Likely outputs | None (read-only) |
-| Future API placeholders | `GET /api/items?plant=&type=&since=&until=` → `TimelineItem[]` |
+| Primary actions | Confirm or dismiss `ReviewCandidate` items |
+| Likely inputs | None on load; confirm / dismiss per item |
+| Likely outputs | Status update per item (client-side state only at MVP) |
+| Data displayed | `ReviewCandidate[]` filtered to `status === "pending"` |
+| API (current) | Mock-only — `getReviewCandidates()` returns mock data |
+| Future API placeholders | `GET /api/v1/review-candidates?status=pending` → `ReviewCandidate[]`; `PATCH /api/v1/review-candidates/:id` |
 
 ---
 
@@ -76,23 +84,27 @@ Lightweight draft contracts for each UI surface. These are **mock-friendly** —
 
 | | |
 |---|---|
-| Primary actions | View item detail, manually trigger processing, dismiss |
-| Likely inputs | None on load; operator actions per row |
-| Likely outputs | Trigger process / dismiss API calls |
-| Future API placeholders | `GET /api/admin/intake` → `IntakeItem[]`; `POST /api/admin/intake/:id/process` |
+| Primary actions | View item detail, source badge, status badge |
+| Likely inputs | None on load |
+| Likely outputs | None at MVP (read-only display) |
+| Data displayed | `IntakeItem[]` with source emoji + status badge |
+| API (current) | Mock-only — `getIntakeItems()` returns mock data |
+| Future API placeholders | `GET /api/v1/admin/intake` → `IntakeItem[]`; `POST /api/v1/admin/intake/:id/process` |
 
 ---
 
 ## Admin — Review Queue
 
-**Purpose:** Show items flagged for manual operator review.
+**Purpose:** Show AI-parsed items flagged for operator confirmation.
 
 | | |
 |---|---|
-| Primary actions | Approve, edit, discard item |
+| Primary actions | Confirm or reject `ReviewCandidate` items |
 | Likely inputs | Optional edited content per item |
-| Likely outputs | Approved / discarded items removed from queue |
-| Future API placeholders | `GET /api/admin/review` → `IntakeItem[]`; `PATCH /api/admin/review/:id` |
+| Likely outputs | Confirmed / rejected items removed from queue |
+| Data displayed | `ReviewCandidate[]` with confidence badge |
+| API (current) | Mock-only — `getReviewCandidates()` returns mock data |
+| Future API placeholders | `GET /api/v1/admin/review-candidates` → `ReviewCandidate[]`; `PATCH /api/v1/admin/review-candidates/:id` |
 
 ---
 
@@ -102,11 +114,11 @@ Lightweight draft contracts for each UI surface. These are **mock-friendly** —
 
 | | |
 |---|---|
-| Primary actions | Trigger manual sync, view error detail |
+| Primary actions | View sync status, trigger manual sync (future) |
 | Likely inputs | None on load |
-| Likely outputs | Trigger sync API call |
-| Data displayed | `SyncStatus` block: last run, items processed, error count |
-| Future API placeholders | `GET /api/admin/sync/status` → `SyncStatus`; `POST /api/admin/sync/run` |
+| Likely outputs | None at MVP |
+| Data displayed | Placeholder content at MVP — no live data shape defined yet |
+| Future API placeholders | `GET /api/v1/admin/sync/status` → `SyncStatus`; `POST /api/v1/admin/sync/run` |
 
 ---
 
@@ -119,16 +131,17 @@ Lightweight draft contracts for each UI surface. These are **mock-friendly** —
 | Primary actions | View current config values (read-only at MVP) |
 | Likely inputs | None at MVP |
 | Likely outputs | None at MVP |
-| Future API placeholders | `GET /api/admin/config` → `{ [key: string]: string }` |
+| Future API placeholders | `GET /api/v1/admin/config` → `{ [key: string]: string }` |
 
 ---
 
 ## Assumptions
-- All `POST /api/items` calls are fire-and-store; no validation round-trip before save.
-- `capturedAt` is always set client-side at time of tap/save.
-- Plant tags are free-text strings at MVP; structured plant IDs are a future concern.
+- Text captures use `POST /api/v1/captures`; this endpoint is live. Photo capture endpoint is not yet defined.
+- `client_capture_id` is always set client-side via `crypto.randomUUID()` at time of save.
+- The backend does not return a structured response body on a successful capture POST (only HTTP status).
+- All admin read endpoints are mock-only at MVP.
 
 ## Open questions
-- Does the API use a unified `POST /api/items` with a `type` discriminator, or separate endpoints per capture type?
-- Is image upload synchronous or does it return a job ID for async processing?
-- What is the admin auth mechanism — Bearer token, cookie session, basic auth?
+- Does the API return a structured `GardenEvent` body after a successful capture POST?
+- What is the `capture_type` for photo captures?
+- What auth mechanism does the admin UI use?

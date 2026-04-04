@@ -9,12 +9,11 @@ Two distinct UI surfaces live in this repo. They share a component library but h
 **Access:** public PWA install; no login wall assumed at MVP.
 
 ### App UI surfaces
-- Today dashboard
+- Today dashboard (recent `GardenEvent` list + `WatchItem` watch list)
 - Dictated note capture
-- Quick log (tap-to-record actions)
-- Photo check (plant photo entry)
-- Review / timeline feed
-- Settings (user preferences, offline mode toggle)
+- Quick log (tap-grid: water, move in/out, repot, observe, weed)
+- Photo check (camera / photo-library entry + optional caption)
+- Review (AI-parsed `ReviewCandidate` items pending confirmation)
 
 ### App UI rules
 - One or two primary actions per screen.
@@ -46,7 +45,7 @@ Two distinct UI surfaces live in this repo. They share a component library but h
 
 ## Shared
 - Component library (buttons, cards, modals, inputs).
-- API boundary layer (`src/api/`).
+- API boundary layer (`src/data/api.ts`); mock data in `src/data/mock.ts`.
 - Type definitions for data shapes.
 
 ## Open questions

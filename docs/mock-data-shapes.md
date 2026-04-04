@@ -1,81 +1,61 @@
 # Mock Data Shapes — ocg-ui
 
-Lightweight frontend-friendly mock shapes. These mirror expected API responses and are used during development before real endpoints exist.
+Types and mock fixtures that match the current codebase (`src/data/mock.ts`, `src/data/api.ts`).
+These are used as the frontend data contract during development; backend schemas may diverge.
 
-> These are **draft shapes** — not authoritative backend schemas.
+> All types below are canonical for the UI layer as of the current scaffold.
 
 ---
 
-## TimelineItem
+## GardenEvent
+
+The primary display unit for the Today and (future) timeline surfaces.
 
 ```ts
-type TimelineItemType = "note" | "log" | "photo";
-
-interface TimelineItem {
-  id: string;                    // uuid
-  type: TimelineItemType;
-  body?: string;                 // free-text content (note or log note)
-  action?: string;               // quick-log action label e.g. "watered"
-  photoUrl?: string;             // resolved URL for photo items
-  plantTag?: string;             // free-text plant identifier
-  capturedAt: string;            // ISO 8601
-  syncedAt?: string;             // ISO 8601, absent if pending sync
+interface GardenEvent {
+  id: string
+  type: 'water' | 'move_in' | 'move_out' | 'repot' | 'observe' | 'weed' | 'note' | 'photo'
+  plant?: string
+  zone?: string
+  note?: string
+  timestamp: string  // ISO 8601
 }
 ```
 
 **Example:**
 ```json
 {
-  "id": "a1b2c3",
-  "type": "note",
-  "body": "Basil looking leggy, needs more light",
-  "capturedAt": "2025-06-10T08:23:00Z",
-  "syncedAt": "2025-06-10T08:24:15Z"
+  "id": "2",
+  "type": "observe",
+  "plant": "Tomato seedlings",
+  "note": "Two new true leaves showing. Looking healthy.",
+  "zone": "grow tent",
+  "timestamp": "2025-06-10T05:00:00Z"
 }
 ```
 
 ---
 
-## QuickLogAction
+## WatchItem
+
+Items surfaced on the Today dashboard as reminders or follow-up notes.
 
 ```ts
-interface QuickLogAction {
-  id: string;                    // uuid, matches TimelineItem.id
-  action: string;                // e.g. "watered", "fertilized", "observed"
-  plantTag?: string;
-  note?: string;
-  capturedAt: string;            // ISO 8601
+interface WatchItem {
+  id: string
+  label: string
+  plant?: string
+  addedAt: string  // ISO 8601
 }
 ```
 
 **Example:**
 ```json
 {
-  "id": "d4e5f6",
-  "action": "watered",
-  "plantTag": "tomatoes",
-  "capturedAt": "2025-06-10T09:00:00Z"
-}
-```
-
----
-
-## ReviewCard
-
-```ts
-interface ReviewCard {
-  item: TimelineItem;
-  relatedItems?: TimelineItem[]; // other items same day / same plant
-}
-```
-
-**Example:**
-```json
-{
-  "item": { "id": "a1b2c3", "type": "note", "body": "Basil leggy", "capturedAt": "2025-06-10T08:23:00Z" },
-  "relatedItems": [
-    { "id": "d4e5f6", "type": "log", "action": "watered", "plantTag": "basil", "capturedAt": "2025-06-10T09:00:00Z" }
-  ]
+  "id": "w1",
+  "label": "Check pepper seedlings — looked pale",
+  "plant": "Peppers",
+  "addedAt": "2025-06-09T20:00:00Z"
 }
 ```
 
@@ -83,86 +63,110 @@ interface ReviewCard {
 
 ## IntakeItem
 
-```ts
-type IntakeStatus = "pending" | "processing" | "flagged" | "done" | "error";
+Admin intake queue items — raw captures waiting for processing.
 
+```ts
 interface IntakeItem {
-  id: string;
-  source: string;                // e.g. "email", "manual", "photo"
-  rawContent: string;            // original text or description
-  status: IntakeStatus;
-  receivedAt: string;            // ISO 8601
-  errorMessage?: string;         // present when status === "error"
+  id: string
+  source: 'gmail' | 'dictation' | 'photo' | 'manual'
+  type: string         // free-text description e.g. "voice note", "photo capture"
+  status: 'pending' | 'reviewed' | 'linked'
+  preview: string      // short display string
+  time: string         // relative time string e.g. "2h ago"
 }
 ```
 
 **Example:**
 ```json
 {
-  "id": "g7h8i9",
-  "source": "email",
-  "rawContent": "Watered everything this morning, tomatoes look good",
+  "id": "i1",
+  "source": "dictation",
+  "type": "voice note",
   "status": "pending",
-  "receivedAt": "2025-06-10T07:15:00Z"
+  "preview": "Watered the basil and checked on the tomatoes...",
+  "time": "2h ago"
 }
 ```
 
 ---
 
-## SyncStatus
+## ReviewCandidate
+
+Admin/app review queue items — AI-parsed captures awaiting confirmation.
 
 ```ts
-interface SyncStatus {
-  lastRunAt?: string;            // ISO 8601, absent if never run
-  itemsProcessed: number;
-  itemsPending: number;
-  errorCount: number;
-  isRunning: boolean;
+interface ReviewCandidate {
+  id: string
+  rawText: string
+  parsedPlant?: string
+  parsedAction?: string
+  confidence: 'high' | 'medium' | 'low'
+  status: 'pending' | 'confirmed' | 'rejected'
 }
 ```
 
 **Example:**
 ```json
 {
-  "lastRunAt": "2025-06-10T09:05:00Z",
-  "itemsProcessed": 142,
-  "itemsPending": 3,
-  "errorCount": 1,
-  "isRunning": false
+  "id": "r1",
+  "rawText": "watered basil and mint",
+  "parsedPlant": "Basil, Mint",
+  "parsedAction": "water",
+  "confidence": "high",
+  "status": "pending"
 }
 ```
 
 ---
 
-## WeatherSummaryBlock
+## CapturePayload (live intake API request body)
+
+Shape sent to `POST /api/v1/captures` for text-based captures.
+Photo upload is mock-only; payload shape is TBD pending backend contract.
 
 ```ts
-interface WeatherSummaryBlock {
-  date: string;                  // ISO 8601 date ("2025-06-10")
-  conditionLabel: string;        // e.g. "Partly cloudy"
-  tempHighC?: number;
-  tempLowC?: number;
-  precipMm?: number;
-  source?: string;               // attribution, e.g. "Open-Meteo"
+interface CapturePayload {
+  capture_type: 'dictated_note' | 'quick_log'  // extend as new types are defined
+  raw_text: string
+  client_capture_id?: string  // UUID generated client-side
 }
 ```
 
-**Example:**
+**Required headers:**
+```
+Authorization: Bearer <VITE_OCG_DEVICE_TOKEN>
+x-ocg-device-id: <VITE_OCG_DEVICE_ID>
+Content-Type: application/json
+```
+
+**Example (dictated note):**
 ```json
 {
-  "date": "2025-06-10",
-  "conditionLabel": "Partly cloudy",
-  "tempHighC": 24,
-  "tempLowC": 14,
-  "precipMm": 0,
-  "source": "Open-Meteo"
+  "capture_type": "dictated_note",
+  "raw_text": "Basil looking leggy, needs more light",
+  "client_capture_id": "a1b2c3d4-..."
+}
+```
+
+**Example (quick log):**
+```json
+{
+  "capture_type": "quick_log",
+  "raw_text": "water — tomatoes",
+  "client_capture_id": "e5f6g7h8-..."
 }
 ```
 
 ---
 
 ## Assumptions
-- All `id` fields are UUID strings generated client-side or server-side.
-- All timestamps are ISO 8601 strings in UTC.
-- `plantTag` is a free-text string; structured plant IDs are a future concern.
-- `WeatherSummaryBlock` may be absent if weather data is unavailable — UI must handle gracefully.
+- `GardenEvent` is the UI's current representation of historical activity; it may be replaced by a richer backend type.
+- `WatchItem` is frontend-generated or AI-derived; backend source TBD.
+- `IntakeItem.time` is a pre-formatted string from the mock; a real API would return an ISO timestamp.
+- `client_capture_id` is set by the client using `crypto.randomUUID()`.
+- `SyncStatus` and `WeatherSummaryBlock` shapes are deferred; no live data source or UI surface yet.
+
+## Open questions
+- What is the `capture_type` value for photo captures when the backend endpoint is defined?
+- Will the backend return a structured `GardenEvent` after a successful capture POST, or is the read path entirely separate?
+- What shape does the admin sync/status endpoint return?

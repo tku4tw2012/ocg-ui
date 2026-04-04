@@ -10,6 +10,10 @@ Backend contracts are still evolving; keep API boundaries explicit and mock-frie
 - Save-first: the user should never feel like they are filling out forms.
 - When in doubt, do less, show less, require less.
 
+## Stack
+- **Runtime**: Vite + React 19 + TypeScript + Tailwind CSS v3 + React Router v7
+- Build: `npm run build` (tsc + vite), dev: `npm run dev`, lint: `npm run lint`
+
 ## Coding preferences
 - Prefer small, composable components with minimal props surface.
 - Avoid heavy abstractions, factories, or framework boilerplate unless clearly warranted.
@@ -25,13 +29,13 @@ Backend contracts are still evolving; keep API boundaries explicit and mock-frie
 
 ## API / backend boundary
 - Never hard-code backend URLs or schemas in component files.
-- API call shapes live in `src/api/` (or equivalent boundary layer).
+- API call shapes live in `src/data/api.ts`; mock data and type definitions live in `src/data/mock.ts`.
 - Use typed mock objects that mirror expected API shapes during development.
 - Mark placeholder endpoints with a `// TODO: real endpoint` comment.
 
 ## App UI vs admin UI
-- **App UI** (`src/app/` or `src/pages/app/`): user-facing, calm, minimal chrome.
-- **Admin/operator UI** (`src/app/admin/` or `src/pages/admin/`): denser, functional,
+- **App UI** (`src/app/`): user-facing, calm, minimal chrome, bottom nav.
+- **Admin/operator UI** (`src/admin/`): denser, functional, top nav,
   but must not feel like an enterprise dashboard. Same component library, lighter decoration.
 
 ## What Copilot should NOT do in this repo

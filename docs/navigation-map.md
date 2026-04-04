@@ -6,18 +6,19 @@ First-pass surface and route map. Routes use a `/` prefix convention; adjust to 
 
 | Surface | Route | Description |
 |---|---|---|
-| Today | `/` | Daily dashboard: weather summary, recent log, quick-capture entry points |
-| Dictated Note | `/note/new` | Full-screen voice / text note capture |
-| Quick Log | `/log/quick` | Tap-grid of common garden actions (water, feed, observe, etc.) |
-| Photo Check | `/log/photo` | Camera / photo-library entry + optional note |
-| Review | `/review` | Scrollable timeline of past entries, filterable by plant / type / date |
-| Settings | `/settings` | User preferences, offline mode, notification toggles |
+| Today | `/today` | Daily dashboard: recent garden events (GardenEvents), watch list, quick-capture entry points |
+| Dictated Note | `/note` | Full-screen text note capture; submits to `POST /api/v1/captures` (capture_type: dictated_note) |
+| Quick Log | `/log` | Tap-grid of 6 common garden actions; submits to `POST /api/v1/captures` (capture_type: quick_log) |
+| Photo Check | `/photo` | Camera / photo-library entry + optional caption; photo upload is mock-only pending backend contract |
+| Review | `/review` | List of AI-parsed `ReviewCandidate` items pending operator confirmation |
 
-### App bottom navigation (suggested)
+`/` redirects to `/today`.
+
+### App bottom navigation (live)
 ```
-Today  |  Log  |  Review
+Today  |  Note  |  Log  |  Photo  |  Review
 ```
-Quick Log and Photo Check are accessed from the Log entry point or from Today quick-actions.
+Five tabs, fixed bottom, full-width up to `max-w-lg`.
 
 ---
 
@@ -35,11 +36,11 @@ All admin routes sit under `/admin/*` and should be protected at the route level
 ---
 
 ## Assumptions
-- A bottom nav with three tabs covers the core app loop.
+- Five-tab bottom nav covers the core app loop.
 - Admin is a separate section, not interleaved with app UI.
-- Deep-link routes (e.g., `/review/:itemId`) will be added as surfaces are built.
+- Deep-link routes (e.g., `/review/:itemId`) will be added as surfaces mature.
 
 ## Open questions
-- Does `/` redirect to `/today` or serve the Today component directly?
+- Should `/review` eventually show a full `GardenEvent` timeline in addition to, or instead of, `ReviewCandidate` items?
 - Is there a dedicated onboarding or first-run route needed at MVP?
-- Should `/log/quick` and `/log/photo` share a single `/log/new` entry with a type selector?
+- Will `/photo` gain a real backend upload endpoint; if so, what is the capture_type value?

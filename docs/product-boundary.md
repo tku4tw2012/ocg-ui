@@ -10,7 +10,7 @@ This repo owns the OCGarden UI layer and its boundary contracts.
 | Admin / operator UI | Intake queue, review queue, sync status, settings shell |
 | Mock data & mock flows | Frontend-usable mocks that mirror expected API shapes |
 | Design system direction | Component patterns, typography, spacing, color decisions |
-| API boundary placeholders | Typed stubs and `// TODO: real endpoint` markers in `src/api/` |
+| API boundary placeholders | Typed stubs and `// TODO: real endpoint` markers in `src/data/api.ts`; mock data in `src/data/mock.ts` |
 | Navigation map & routes | Route definitions and surface ownership |
 | PWA manifest & shell | App shell, icons, service worker entry point |
 
