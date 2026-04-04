@@ -1,7 +1,7 @@
 /**
  * Feature flags.
  *
- * Low-risk boolean knobs that control optional UI behaviour.
+ * Low-risk boolean knobs that control optional UI behavior.
  * Flip a flag here to enable or disable a feature across the app.
  *
  * Security note: these flags are build-time constants — they are not a
