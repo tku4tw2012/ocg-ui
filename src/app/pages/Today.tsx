@@ -3,6 +3,7 @@ import Card from '../../components/Card'
 import Badge from '../../components/Badge'
 import { getRecentEvents, getWatchItems } from '../../data/api'
 import type { GardenEvent, WatchItem } from '../../data/api'
+import { actionLabels, pageCopy, sectionHeadings } from '../../config/appConfig'
 
 function formatTime(iso: string): string {
   const d = new Date(iso)
@@ -11,17 +12,6 @@ function formatTime(iso: string): string {
   if (diffH < 1) return 'just now'
   if (diffH < 24) return `${diffH}h ago`
   return `${Math.floor(diffH / 24)}d ago`
-}
-
-const actionLabels: Record<string, string> = {
-  water: 'Watered',
-  move_in: 'Moved indoors',
-  move_out: 'Moved outdoors',
-  repot: 'Repotted',
-  observe: 'Observed',
-  weed: 'Weeded',
-  note: 'Note',
-  photo: 'Photo',
 }
 
 export default function Today() {
@@ -37,7 +27,7 @@ export default function Today() {
     <div className="px-4 pt-6 pb-4 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-stone-800">Today</h1>
+        <h1 className="text-2xl font-semibold text-stone-800">{pageCopy.today.title}</h1>
         <p className="text-sm text-stone-400 mt-1">
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
         </p>
@@ -47,15 +37,15 @@ export default function Today() {
       <Card className="flex items-center gap-3 bg-green-50 border-green-100">
         <span className="text-3xl">🌤</span>
         <div>
-          <p className="text-sm font-medium text-stone-700">Weather context</p>
-          <p className="text-xs text-stone-400">Connect weather source to show conditions</p>
+          <p className="text-sm font-medium text-stone-700">{pageCopy.today.weatherPlaceholderTitle}</p>
+          <p className="text-xs text-stone-400">{pageCopy.today.weatherPlaceholderDetail}</p>
         </div>
       </Card>
 
       {/* Watch items */}
       {watches.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">Follow-up</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">{sectionHeadings.followUp}</h2>
           <div className="space-y-2">
             {watches.map((w) => (
               <Card key={w.id} className="flex items-start gap-3">
@@ -72,7 +62,7 @@ export default function Today() {
 
       {/* Recent events */}
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">Recent</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-2">{sectionHeadings.recent}</h2>
         <div className="space-y-2">
           {events.map((e) => (
             <Card key={e.id}>

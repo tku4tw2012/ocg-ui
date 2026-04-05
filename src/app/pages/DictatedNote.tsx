@@ -1,11 +1,6 @@
 import { useState } from 'react'
 import { submitNote } from '../../data/api'
-
-const examples = [
-  'Watered the basil and the mint. Basil looked a little droopy.',
-  'Pepper seedlings still pale — maybe more light needed?',
-  'Moved Meyer Lemon back outside. Frost cleared.',
-]
+import { noteExamples, pageCopy } from '../../config/appConfig'
 
 export default function DictatedNote() {
   const [text, setText] = useState('')
@@ -22,14 +17,14 @@ export default function DictatedNote() {
   return (
     <div className="px-4 pt-6 pb-4 space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-800">Note</h1>
-        <p className="text-sm text-stone-400 mt-1">Quick capture — save first, parse later</p>
+        <h1 className="text-2xl font-semibold text-stone-800">{pageCopy.note.title}</h1>
+        <p className="text-sm text-stone-400 mt-1">{pageCopy.note.subtitle}</p>
       </div>
 
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="What happened in the garden?"
+        placeholder={pageCopy.note.placeholder}
         rows={7}
         className="w-full rounded-2xl border border-stone-200 bg-white p-4 text-stone-800 placeholder-stone-300 text-base resize-none focus:outline-none focus:ring-2 focus:ring-green-300"
         autoFocus
@@ -40,13 +35,13 @@ export default function DictatedNote() {
         disabled={!text.trim()}
         className="w-full py-4 rounded-2xl bg-green-700 text-white font-semibold text-base active:bg-green-800 disabled:opacity-40 transition-opacity"
       >
-        {saved ? '✓ Saved' : 'Save Note'}
+        {saved ? pageCopy.note.savedLabel : pageCopy.note.saveLabel}
       </button>
 
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-3">Examples</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-3">{pageCopy.note.examplesHeading}</h2>
         <div className="space-y-2">
-          {examples.map((ex, i) => (
+          {noteExamples.map((ex, i) => (
             <button
               key={i}
               onClick={() => setText(ex)}

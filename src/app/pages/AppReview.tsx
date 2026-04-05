@@ -3,6 +3,7 @@ import Card from '../../components/Card'
 import Badge from '../../components/Badge'
 import { getReviewCandidates } from '../../data/api'
 import type { ReviewCandidate } from '../../data/api'
+import { pageCopy } from '../../config/appConfig'
 
 const confidenceVariant: Record<string, 'green' | 'yellow' | 'red'> = {
   high: 'green',
@@ -24,14 +25,14 @@ export default function AppReview() {
   return (
     <div className="px-4 pt-6 pb-4 space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-800">Review</h1>
+        <h1 className="text-2xl font-semibold text-stone-800">{pageCopy.review.title}</h1>
         <p className="text-sm text-stone-400 mt-1">{items.length} item{items.length !== 1 ? 's' : ''} to review</p>
       </div>
 
       {items.length === 0 && (
         <div className="text-center py-12 text-stone-400">
-          <span className="text-4xl block mb-3">✓</span>
-          <p className="text-sm">All caught up</p>
+          <span className="text-4xl block mb-3">{pageCopy.review.emptyIcon}</span>
+          <p className="text-sm">{pageCopy.review.emptyMessage}</p>
         </div>
       )}
 
