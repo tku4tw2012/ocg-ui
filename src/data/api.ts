@@ -39,7 +39,7 @@ const isLive = Boolean(API_BASE && DEVICE_TOKEN && DEVICE_ID)
 
 function authHeaders(): Record<string, string> {
   return {
-    'Authorization': `Bearer ${DEVICE_TOKEN}`,
+    Authorization: `Bearer ${DEVICE_TOKEN}`,
     'x-ocg-device-id': DEVICE_ID!,
   }
 }
@@ -176,11 +176,7 @@ export async function submitNote(text: string): Promise<void> {
   })
 }
 
-export async function submitQuickLog(
-  action: string,
-  plant?: string,
-  note?: string
-): Promise<void> {
+export async function submitQuickLog(action: string, plant?: string, note?: string): Promise<void> {
   const parts = [action, plant, note].filter(Boolean)
   await postCapture({
     capture_type: 'quick_log',

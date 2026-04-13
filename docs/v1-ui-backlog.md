@@ -5,7 +5,8 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 ---
 
 ## Done (merged to main — PR #1)
-*All core app + admin shells and MVP capture flows are live.*
+
+_All core app + admin shells and MVP capture flows are live._
 
 - [x] App shell: bottom 5-tab nav (Today / Note / Log / Photo / Review) with `max-w-lg` mobile layout
 - [x] Today screen: date header, recent `GardenEvent` list, `WatchItem` watch list
@@ -23,7 +24,8 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 - [x] Admin — Settings: placeholder surface
 
 ## Done (Codespaces + deploy setup)
-*Environment is reproducible and deployable from Codespaces.*
+
+_Environment is reproducible and deployable from Codespaces._
 
 - [x] Devcontainer: Node 22, Azure CLI, Functions Core Tools, SWA CLI, editor extensions
 - [x] VS Code settings: format-on-save, ESLint auto-fix, workspace TypeScript
@@ -36,7 +38,8 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 ---
 
 ## Now
-*Highest-value improvements to the existing surfaces.*
+
+_Highest-value improvements to the existing surfaces._
 
 - [x] Wire Today and Review reads to real API when env vars are present (falls back to mock)
 - [ ] Photo upload: define backend contract and implement `submitPhoto` real path
@@ -47,7 +50,8 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 ---
 
 ## Next
-*Enhancements once the core loop is stable.*
+
+_Enhancements once the core loop is stable._
 
 - [ ] Plant tag autocomplete: free-text input with suggestions from past events on Log and Note screens
 - [ ] Review filter on `/review`: filter `ReviewCandidate` by confidence or status
@@ -59,7 +63,8 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 ---
 
 ## Later
-*When the core loop is solid and usage patterns are clear.*
+
+_When the core loop is solid and usage patterns are clear._
 
 - [ ] Weather data integration: live `WeatherSummaryBlock` on Today
 - [ ] Plant index: derived page of distinct plant tags with per-plant event history
@@ -71,6 +76,7 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 ---
 
 ## Assumptions
+
 - "Mock-only" items in **Now** mean the API function exists but only `console.log`s — no backend call.
 - Admin UI auth mechanism is not scoped to **Now**.
 - Photo upload `capture_type` will be determined when the backend endpoint is defined.

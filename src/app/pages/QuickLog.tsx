@@ -67,7 +67,11 @@ export default function QuickLog() {
         disabled={!selected}
         className="w-full py-4 rounded-2xl bg-green-700 text-white font-semibold text-base active:bg-green-800 disabled:opacity-40 transition-opacity"
       >
-        {error ? '⚡ Saved offline — will sync' : saved ? pageCopy.quickLog.savedLabel : pageCopy.quickLog.saveLabel}
+        {error
+          ? '⚡ Saved offline — will sync'
+          : saved
+            ? pageCopy.quickLog.savedLabel
+            : pageCopy.quickLog.saveLabel}
       </button>
     </div>
   )

@@ -48,11 +48,17 @@ export default function DictatedNote() {
         disabled={!text.trim()}
         className="w-full py-4 rounded-2xl bg-green-700 text-white font-semibold text-base active:bg-green-800 disabled:opacity-40 transition-opacity"
       >
-        {error ? '⚡ Saved offline — will sync' : saved ? pageCopy.note.savedLabel : pageCopy.note.saveLabel}
+        {error
+          ? '⚡ Saved offline — will sync'
+          : saved
+            ? pageCopy.note.savedLabel
+            : pageCopy.note.saveLabel}
       </button>
 
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-3">{pageCopy.note.examplesHeading}</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-stone-400 mb-3">
+          {pageCopy.note.examplesHeading}
+        </h2>
         <div className="space-y-2">
           {noteExamples.map((ex, i) => (
             <button
