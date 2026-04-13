@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "OCG_ALLOWED_DEVICE_IDS": "iphone-13-mini,iphone-15-cn",
+    "OCG_DEVICE_TOKEN_IPHONE_SE_3": "",
+    "OCG_DEVICE_TOKEN_IPHONE_13_MINI": "",
+    "OCG_DEVICE_TOKEN_IPHONE_15_CN": ""
+  }
+}
