@@ -22,6 +22,17 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 - [x] Admin — Sync Status: placeholder surface
 - [x] Admin — Settings: placeholder surface
 
+## Done (Codespaces + deploy setup)
+*Environment is reproducible and deployable from Codespaces.*
+
+- [x] Devcontainer: Node 22, Azure CLI, Functions Core Tools, SWA CLI, editor extensions
+- [x] VS Code settings: format-on-save, ESLint auto-fix, workspace TypeScript
+- [x] Prettier config + format script
+- [x] `.env.example` template for `VITE_API_BASE_URL`, `VITE_OCG_DEVICE_TOKEN`, `VITE_OCG_DEVICE_ID`
+- [x] Azure Static Web Apps config: `staticwebapp.config.json` (SPA fallback), `swa-cli.config.json`
+- [x] Deploy script: `npm run swa:deploy` builds and deploys from Codespaces
+- [x] README updated: Codespaces instructions, env var table, deploy commands, accurate stack versions
+
 ---
 
 ## Now

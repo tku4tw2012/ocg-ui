@@ -1,0 +1,26 @@
+{
+  "routes": [
+    {
+      "route": "/.auth/login/github",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/.auth/login/*",
+      "statusCode": 404
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["authenticated"]
+    }
+  ],
+  "responseOverrides": {
+    "401": {
+      "redirect": "/.auth/login/github",
+      "statusCode": 302
+    }
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/manifest.json", "/favicon.svg", "/icon-*.png"]
+  }
+}
