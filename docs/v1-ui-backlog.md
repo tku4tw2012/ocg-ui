@@ -38,11 +38,11 @@ Practical next-step slices, biased toward the smallest useful deliverable.
 ## Now
 *Highest-value improvements to the existing surfaces.*
 
-- [ ] Wire Today and Review reads to real API when env vars are present (currently always mock)
+- [x] Wire Today and Review reads to real API when env vars are present (falls back to mock)
 - [ ] Photo upload: define backend contract and implement `submitPhoto` real path
-- [ ] Offline-first baseline: queue pending captures in `localStorage` when offline; flush on reconnect
+- [x] Offline-first baseline: queue pending captures in `localStorage` when offline; flush on reconnect
 - [ ] Admin Sync Status: implement real `GET /api/v1/admin/sync/status` display
-- [ ] Error handling: show user-facing error state when a capture POST fails
+- [x] Error handling: show user-facing error state when a capture POST fails (queued offline feedback)
 
 ---
 

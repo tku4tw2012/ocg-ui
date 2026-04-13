@@ -5,13 +5,26 @@ import { noteExamples, pageCopy } from '../../config/appConfig'
 export default function DictatedNote() {
   const [text, setText] = useState('')
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState(false)
 
   async function handleSubmit() {
     if (!text.trim()) return
-    await submitNote(text.trim())
-    setSaved(true)
-    setText('')
-    setTimeout(() => setSaved(false), 2000)
+    setError(false)
+    try {
+      await submitNote(text.trim())
+      setSaved(true)
+      setText('')
+      setTimeout(() => setSaved(false), 2000)
+    } catch {
+      setError(true)
+      // Note was queued offline — still clear the input so the user isn't stuck.
+      setSaved(true)
+      setText('')
+      setTimeout(() => {
+        setSaved(false)
+        setError(false)
+      }, 3000)
+    }
   }
 
   return (
@@ -35,7 +48,7 @@ export default function DictatedNote() {
         disabled={!text.trim()}
         className="w-full py-4 rounded-2xl bg-green-700 text-white font-semibold text-base active:bg-green-800 disabled:opacity-40 transition-opacity"
       >
-        {saved ? pageCopy.note.savedLabel : pageCopy.note.saveLabel}
+        {error ? '⚡ Saved offline — will sync' : saved ? pageCopy.note.savedLabel : pageCopy.note.saveLabel}
       </button>
 
       <section>

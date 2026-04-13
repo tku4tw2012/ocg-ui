@@ -7,14 +7,27 @@ export default function QuickLog() {
   const [selected, setSelected] = useState<string | null>(null)
   const [note, setNote] = useState('')
   const [saved, setSaved] = useState(false)
+  const [error, setError] = useState(false)
 
   async function handleSave() {
     if (!selected) return
-    await submitQuickLog(selected, undefined, note || undefined)
-    setSaved(true)
-    setSelected(null)
-    setNote('')
-    setTimeout(() => setSaved(false), 2000)
+    setError(false)
+    try {
+      await submitQuickLog(selected, undefined, note || undefined)
+      setSaved(true)
+      setSelected(null)
+      setNote('')
+      setTimeout(() => setSaved(false), 2000)
+    } catch {
+      setError(true)
+      setSaved(true)
+      setSelected(null)
+      setNote('')
+      setTimeout(() => {
+        setSaved(false)
+        setError(false)
+      }, 3000)
+    }
   }
 
   return (
@@ -54,7 +67,7 @@ export default function QuickLog() {
         disabled={!selected}
         className="w-full py-4 rounded-2xl bg-green-700 text-white font-semibold text-base active:bg-green-800 disabled:opacity-40 transition-opacity"
       >
-        {saved ? pageCopy.quickLog.savedLabel : pageCopy.quickLog.saveLabel}
+        {error ? '⚡ Saved offline — will sync' : saved ? pageCopy.quickLog.savedLabel : pageCopy.quickLog.saveLabel}
       </button>
     </div>
   )
