@@ -136,12 +136,17 @@ Lightweight draft contracts for each UI surface. These are **mock-friendly** —
 ---
 
 ## Assumptions
-- Text captures use `POST /api/v1/captures`; this endpoint is live. Photo capture endpoint is not yet defined.
+- Text captures use `POST /api/v1/captures`; this endpoint is live and returns `{ id: "<uuid>", status: "queued" }` on 201.
 - `client_capture_id` is always set client-side via `crypto.randomUUID()` at time of save.
-- The backend does not return a structured response body on a successful capture POST (only HTTP status).
+- On network failure in live mode, captures queue in `localStorage` and flush on next successful save or app init.
+- Photo capture endpoint is not yet defined; `submitPhoto()` is mock-only.
 - All admin read endpoints are mock-only at MVP.
 
+## Verified as of 2026-04-16
+- `dictated_note` and `quick_log` text submits succeed end-to-end from Codespaces to the deployed Azure intake.
+- Auth headers (`Bearer` token + `x-ocg-device-id`) are accepted by the live backend.
+- Backend returns `201` with `{ id, status: "queued" }` — confirmed not mock fallback.
+
 ## Open questions
-- Does the API return a structured `GardenEvent` body after a successful capture POST?
 - What is the `capture_type` for photo captures?
 - What auth mechanism does the admin UI use?
