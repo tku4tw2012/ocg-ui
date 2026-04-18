@@ -2,13 +2,18 @@
 OCGarden text-intake Azure Function — POST /api/v1/captures
 
 Accepts JSON capture payloads from authenticated devices, validates auth
-headers, and writes to an Azure Storage Queue for downstream processing.
+headers, writes the raw request envelope to blob storage, and enqueues a
+lightweight pointer message for downstream processing.
 
 Auth contract:
   - Authorization: Bearer <device-token>
   - x-ocg-device-id: <device-id>
   - OCG_ALLOWED_DEVICE_IDS env var gates which device IDs are accepted
   - Per-device token env vars: OCG_DEVICE_TOKEN_<DEVICE_ID_UPPER_DASHED>
+
+Storage contract (configured via app settings):
+  - Queue:  %OCG_CAPTURE_QUEUE%        (default: intake-pending)
+  - Blob:   %OCG_CAPTURE_RAW_CONTAINER%/<yyyy>/<mm>/<dd>/<capture_id>/request.json
 
 Deployed to: func-ocg2026-intake-04vmt
 """
@@ -20,6 +25,7 @@ import uuid
 from datetime import datetime, timezone
 
 import azure.functions as func
+from azure.storage.blob import BlobServiceClient
 
 app = func.FunctionApp()
 
@@ -75,11 +81,11 @@ VALID_CAPTURE_TYPES = {"dictated_note", "quick_log", "photo", "manual"}
 @app.route(route="v1/captures", methods=["POST"], auth_level=func.AuthLevel.ANONYMOUS)
 @app.queue_output(
     arg_name="queue_msg",
-    queue_name="ocg-captures",
+    queue_name="%OCG_CAPTURE_QUEUE%",
     connection="AzureWebJobsStorage",
 )
 def capture_post(req: func.HttpRequest, queue_msg: func.Out[str]) -> func.HttpResponse:
-    """Accept a capture POST, validate, and enqueue."""
+    """Accept a capture POST, validate, write raw blob, and enqueue pointer."""
     # ── Auth ──
     ok, err_msg, status = _authenticate(req)
     if not ok:
@@ -118,21 +124,49 @@ def capture_post(req: func.HttpRequest, queue_msg: func.Out[str]) -> func.HttpRe
             mimetype="application/json",
         )
 
-    # ── Build queue message ──
-    message = {
-        "id": str(uuid.uuid4()),
+    # ── Build envelope ──
+    capture_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    device_id = req.headers.get("x-ocg-device-id", "")
+
+    raw_envelope = {
+        "id": capture_id,
         "client_capture_id": client_capture_id or None,
         "capture_type": capture_type,
         "raw_text": raw_text,
-        "device_id": req.headers.get("x-ocg-device-id", ""),
-        "received_at": datetime.now(timezone.utc).isoformat(),
+        "device_id": device_id,
+        "received_at": now.isoformat(),
     }
 
-    queue_msg.set(json.dumps(message))
-    logging.info("Capture enqueued: %s (%s)", message["id"], capture_type)
+    # ── Write raw blob ──
+    container = os.getenv("OCG_CAPTURE_RAW_CONTAINER", "intake-raw")
+    blob_name = f"{now.strftime('%Y/%m/%d')}/{capture_id}/request.json"
+
+    conn_str = os.environ["AzureWebJobsStorage"]
+    blob_client = BlobServiceClient.from_connection_string(conn_str)
+    blob_client.get_blob_client(container, blob_name).upload_blob(
+        json.dumps(raw_envelope, indent=2),
+        content_type="application/json",
+        overwrite=False,
+    )
+    logging.info("Raw blob written: %s/%s", container, blob_name)
+
+    # ── Enqueue pointer (no raw_text — lives in blob only) ──
+    queue_message = {
+        "id": capture_id,
+        "client_capture_id": client_capture_id or None,
+        "capture_type": capture_type,
+        "device_id": device_id,
+        "received_at": now.isoformat(),
+        "blob_container": container,
+        "blob_name": blob_name,
+    }
+
+    queue_msg.set(json.dumps(queue_message))
+    logging.info("Capture enqueued: %s (%s)", capture_id, capture_type)
 
     return func.HttpResponse(
-        json.dumps({"id": message["id"], "status": "queued"}),
+        json.dumps({"id": capture_id, "status": "queued"}),
         status_code=201,
         mimetype="application/json",
     )
